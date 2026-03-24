@@ -28,6 +28,12 @@ public class CarroService {
 
         return carroRepository.save(carroExistente);
     }
+    public CarroEntity salvar(CarroEntity carro){
+        if(carro.getValorDiaria() <= 0){
+            throw new IllegalArgumentException("Preço de diária n pode ser negativo");
+        }
+        return  carroRepository.save(carro);
+    }
 
     public void deletar(Long id){
         var carroExistente = carroRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Carro não encontrado"));

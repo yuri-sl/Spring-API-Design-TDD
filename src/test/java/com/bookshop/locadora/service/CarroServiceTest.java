@@ -1,6 +1,7 @@
 package com.bookshop.locadora.service;
 
 import com.bookshop.locadora.entity.CarroEntity;
+import com.bookshop.locadora.model.exception.EntityNotFoundException;
 import com.bookshop.locadora.repository.CarroRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,10 +11,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class CarroServiceTest {
 
@@ -55,6 +58,41 @@ class CarroServiceTest {
         assertThat(erro).isInstanceOf(IllegalArgumentException.class);
 
         Mockito.verifyNoInteractions(carroRepository);
+    }
+
+    @Test
+    @DisplayName("Deve atualizar um carro")
+    public void deveAtualizarUmCarro(){
+        CarroEntity carroSalvo = new CarroEntity(1L,"nissan",10,2026);
+
+        //CADA CHAMADA DA FUNÇÃO DE CARRO REPOSITORY DEVE SER MOCKADA E TESTADA
+        Mockito.when(carroRepository.findById(1L)).thenReturn(Optional.of(carroSalvo));
+
+        CarroEntity carroAtualizarDados = new CarroEntity(1L,"onix",10,2026);
+
+        Mockito.when(carroRepository.save(Mockito.any())).thenReturn(carroAtualizarDados);
+
+        var carroAtualizadoSalvo = carroService.atualizar(1L,carroAtualizarDados);
+
+        assertNotNull(carroAtualizadoSalvo);
+        assertEquals(carroAtualizarDados.getId(),carroAtualizadoSalvo.getId());
+        assertEquals(carroAtualizarDados.getModelo(),carroAtualizadoSalvo.getModelo());
+        assertEquals(carroAtualizarDados.getAno(),carroAtualizadoSalvo.getAno());
+    }
+
+    @Test
+    @DisplayName("Deve falhar ao tentar atualizar um carro inexistente")
+    public void deveFalharEncontrarCarro(){
+
+        CarroEntity carroSalvo = new CarroEntity(1L,"nissan",10,2026);
+
+        Mockito.when(carroRepository.findById(Mockito.any())).thenReturn(Optional.empty());
+
+        CarroEntity carroAtualizarDados = new CarroEntity(1L,"onix",10,2026);
+
+        var erro = catchThrowable(() -> carroService.atualizar(1L,carroAtualizarDados));
+
+        assertThat(erro).isInstanceOf(EntityNotFoundException.class);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.bookshop.locadora.service;
 
 import com.bookshop.locadora.entity.CarroEntity;
+import com.bookshop.locadora.model.Carro;
 import com.bookshop.locadora.model.exception.EntityNotFoundException;
 import com.bookshop.locadora.repository.CarroRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -11,10 +12,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MockitoExtension.class)
@@ -118,6 +119,55 @@ class CarroServiceTest {
         var erro = catchThrowable(() -> carroService.deletar(2L));
 
         assertThat(erro).isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("Must find a car by searching its ID")
+    public void deveEncontrarCarroPorId(){
+        CarroEntity carro = new CarroEntity(1L,"nissan",20,2026);
+
+        Mockito.when(carroRepository.findById(1L)).thenReturn(Optional.of(carro));
+
+        var resposta = carroService.buscarPorId(1L);
+
+        assertThat(resposta).isInstanceOf(CarroEntity.class);
+        Mockito.verify(carroRepository,Mockito.times(1)).findById(1L);
+        assertThat(resposta.getId()).isEqualTo(1L);
+        assertThat(resposta.getAno()).isEqualTo(2026);
+        assertThat(resposta.getModelo()).isEqualTo("nissan");
+
+    }
+
+    @Test
+    @DisplayName("Must return an error when trying to find a car with unknown ID")
+    public void deveRetornarErroAoLocalizarPorID(){
+        Mockito.when(carroRepository.findById(Mockito.any())).thenReturn(Optional.empty());
+
+        var erro = catchThrowable(() -> carroService.buscarPorId(2L));
+        Mockito.verify(carroRepository,Mockito.times(1)).findById(2L);
+        assertThat(erro).isInstanceOf(EntityNotFoundException.class);
+
+    }
+
+    @Test
+    @DisplayName("Should return all cars found")
+    public void deveRetornarTodosOsCarrosEncontrados(){
+        CarroEntity carro1 = CarroEntity.builder().id(1L).modelo("Nissan").valorDiaria(20).ano(2026).build();
+        CarroEntity carro2 = CarroEntity.builder().id(2L).modelo("Onix").valorDiaria(30).ano(2025).build();
+
+        var listaCarros = List.of(carro1,carro2);
+
+        Mockito.when(carroRepository.findAll()).thenReturn(listaCarros);
+
+        var resposta = carroService.listarTodos();
+
+
+        assertThat(resposta).isInstanceOf(List.class);
+        Mockito.verify(carroRepository,Mockito.times(1)).findAll();
+        assertThat(resposta.size()).isEqualTo(2);
+
+
+
     }
 
 }

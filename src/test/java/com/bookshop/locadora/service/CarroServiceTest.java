@@ -95,4 +95,29 @@ class CarroServiceTest {
         assertThat(erro).isInstanceOf(EntityNotFoundException.class);
     }
 
+    @Test
+    @DisplayName("Deve deletar um carro com sucesso")
+    public void deveDeletarCarro(){
+        CarroEntity carro = new CarroEntity(1L,"nissan",20,2026);
+
+        Mockito.when(carroRepository.findById(1L)).thenReturn(Optional.of(carro));
+
+        carroService.deletar(1L);
+
+        Mockito.verify(carroRepository,Mockito.times(1)).findById(1L);
+        Mockito.verify(carroRepository,Mockito.times(1)).deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("Must fail in trying to delete a car with unknown ID")
+    public void deveFalharEmDeletarCarro(){
+        CarroEntity carro = new CarroEntity(1L,"nissan",20,2026);
+
+        Mockito.when(carroRepository.findById(2L)).thenReturn(Optional.empty());
+
+        var erro = catchThrowable(() -> carroService.deletar(2L));
+
+        assertThat(erro).isInstanceOf(EntityNotFoundException.class);
+    }
+
 }

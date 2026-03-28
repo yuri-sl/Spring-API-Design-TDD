@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>annotationProcessor</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -63,8 +63,65 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+
+                <groupId>org.jacoco</groupId>
+
+                <artifactId>jacoco-maven-plugin</artifactId>
+
+                <version>0.8.12</version>
+
+
+
+                <configuration>
+
+                    <excludes>
+
+                        <exclude>**/model/**</exclude>
+
+                        <exclude>**/entity/**</exclude>
+
+                    </excludes>
+
+                </configuration>
+
+
+
+                <executions>
+
+                    <!-- Prepara o agente para coletar dados -->
+
+                    <execution>
+
+                        <id>prepare-agent</id>
+
+                        <goals>
+
+                            <goal>prepare-agent</goal>
+
+                        </goals>
+
+                    </execution>
+
+
+
+                    <!-- Gera o relatório depois dos testes -->
+
+                    <execution>
+
+                        <id>report</id>
+
+                        <phase>verify</phase>
+
+                        <goals>
+
+                            <goal>report</goal>
+
+                        </goals>
+
+                    </execution>
+
+                </executions>
+
             </plugin>
         </plugins>
     </build>

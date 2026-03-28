@@ -47,7 +47,7 @@ class ReservaTest {
         //assertDoesNotThrow(() -> new Reserva(cliente,carro,1));
 
         //AssertJ
-        var erro = Assertions.catchThrowable(() -> new Reserva(cliente,carro,1));
+        var erro = Assertions.catchThrowable(() -> new Reserva(cliente,carro,dias));
 
         Assertions.assertThat(erro).isInstanceOf(ReservaInvalida.class)
                         .hasMessage("numero de dias deve ser positivo");

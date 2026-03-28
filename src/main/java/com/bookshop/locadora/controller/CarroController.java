@@ -5,14 +5,8 @@ import com.bookshop.locadora.entity.CarroEntity;
 import com.bookshop.locadora.model.exception.EntityNotFoundException;
 import com.bookshop.locadora.service.CarroService;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.Response;
-import org.hibernate.action.internal.EntityActionVetoException;
-import org.hibernate.sql.RestrictionRenderingContext;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientResponseException;
 
 import java.util.List;
 

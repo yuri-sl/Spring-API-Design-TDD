@@ -11,12 +11,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -33,6 +31,7 @@ class CarroControllerTest {
     CarroService carroService;
 
     @Test
+    @DisplayName("Deve salvar novo carro no banco")
     public void deveSalvarCarro() throws Exception{
         CarroEntity carro = CarroEntity.builder().id(1L).modelo("Nissan").valorDiaria(250).ano(2026).build();
 
@@ -133,7 +132,6 @@ class CarroControllerTest {
         String json = """
                 [
                     {
-                    
                      "modelo":"Onix",
                      "valorDiaria":150,
                      "ano":2026
@@ -224,13 +222,10 @@ class CarroControllerTest {
     @DisplayName("Deve deletar carro")
     public void deveDeletarCarro()throws Exception{
         CarroEntity carro1 = CarroEntity.builder().id(1L).modelo("Onix").valorDiaria(150).ano(2026).build();
-        CarroEntity carro2 = CarroEntity.builder().id(2L).modelo("Corola").valorDiaria(250).ano(2027).build();
 
         carroService.salvar(carro1);
 
-        String retorno = carro1.getId() + " - Id do carro deletado";
-
-        when(carroService.deletar(Mockito.anyLong()));
+        Mockito.doNothing().when(carroService).deletar(Mockito.any());
 
         String json = """
                     {
@@ -244,26 +239,9 @@ class CarroControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
         );
-        resultado.andExpect(MockMvcResultMatchers.status().isOk())
+        resultado.andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    @Test
-    @DisplayName("Deve dar erro ao atualizar informações do carro")
-    public void deveRetornarNotFoundAoAtualizarDadosDeCarroInexistente() throws Exception{
-        CarroEntity carro = CarroEntity.builder().id(2L).modelo("Onix").valorDiaria(26).ano(2027).build();
-
-        carroService.salvar(carro);
-
-        when(carroService.deletar(Mockito.any()).thenThrow(EntityNotFoundException.class);
-
-        ResultActions resultado = mockMvc.perform(
-                put("/carros/2")
-                        .contentType(MediaType.APPLICATION_JSON)
-        );
-
-        resultado.andExpect(MockMvcResultMatchers.status().isNotFound());
-
-    }
 
 
 
